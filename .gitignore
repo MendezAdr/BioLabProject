@@ -1,0 +1,23 @@
+# --- Bases de Datos SQLite ---
+*.db
+*.db-shm
+*.db-wal
+
+# --- Binarios y carpetas de compilación ---
+bin/
+obj/
+publish/
+
+# --- IDEs y Herramientas ---
+.vscode/
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+# --- Archivos de sistema ---
+.DS_Store
+Thumbs.db
+
+# --- IMPORTANTE: NO ignorar las migraciones ---
+!Migrations/
