@@ -14,6 +14,9 @@ public class AppDbContext : DbContext
     public DbSet<Ordenes> Ordenes { get; set; } = null!;
     public DbSet<Detalle> Detalles { get; set; } = null!;
 
+    public DbSet<TasaCambio> Tasas { get; set; } = null!;
+    public DbSet<Pago> Pagos { get; set; } = null!;
+
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         options.UseSqlite("Data Source = Laboratorio.Db");
@@ -37,6 +40,13 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Usuario>().HasData(
             new Usuario { Id = 1, Nombre = "Adrian", Apellido = "Mendez", Cedula = "12345678", RolId = 1 }
         );
+
+        // Configurar la relación Orden -> Pagos
+        modelBuilder.Entity<Pago>()
+        .HasOne(p => p.Orden)
+        .WithMany(o => o.Pagos) // Una orden tiene muchos pagos
+        .HasForeignKey(p => p.OrdenId)
+        .OnDelete(DeleteBehavior.Cascade); // Si se borra la orden, se borran sus registros de pago
 
         base.OnModelCreating(modelBuilder);
     }
