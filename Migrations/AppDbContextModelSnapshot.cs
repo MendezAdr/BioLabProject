@@ -15,56 +15,25 @@ namespace BioLabProject.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.3");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.4");
 
-            modelBuilder.Entity("BioLabProject.Models.Detalle", b =>
+            modelBuilder.Entity("BioLabProject.Models.ExamenModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ExamenId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Metodo_pago")
-                        .IsRequired()
+                    b.Property<decimal>("CostoEnDivisa")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("OrdenId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("PrecioVentaBolivares")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("PrecioVentaDivisa")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExamenId");
-
-                    b.HasIndex("OrdenId");
-
-                    b.ToTable("Detalles");
-                });
-
-            modelBuilder.Entity("BioLabProject.Models.Examen", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Costo_en_Bolivares")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Costo_en_Divisa")
+                    b.Property<decimal>("CostoenBolivares")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Nombre_Examen")
+                    b.Property<string>("NombreExamen")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -73,21 +42,17 @@ namespace BioLabProject.Migrations
                     b.ToTable("Examenes");
                 });
 
-            modelBuilder.Entity("BioLabProject.Models.Ordenes", b =>
+            modelBuilder.Entity("BioLabProject.Models.OrdenesModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Estado_Pago")
+                    b.Property<string>("EstadoPago")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NumeroControl")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NumeroFactura")
@@ -97,7 +62,10 @@ namespace BioLabProject.Migrations
                     b.Property<int>("PacienteId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("Total")
+                    b.Property<decimal>("TasaBcv")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("TotalDivisa")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -138,35 +106,6 @@ namespace BioLabProject.Migrations
                     b.ToTable("Pacientes");
                 });
 
-            modelBuilder.Entity("BioLabProject.Models.Pago", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Metodo")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Moneda")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Monto")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("OrdenId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Referencia")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrdenId");
-
-                    b.ToTable("Pagos");
-                });
-
             modelBuilder.Entity("BioLabProject.Models.Rol", b =>
                 {
                     b.Property<int>("Id")
@@ -198,23 +137,6 @@ namespace BioLabProject.Migrations
                             Descripcion = "Registro de exámenes y resultados",
                             Nombre = "Bioanalista"
                         });
-                });
-
-            modelBuilder.Entity("BioLabProject.Models.TasaCambio", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("FechaActualizacion")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Tasas");
                 });
 
             modelBuilder.Entity("BioLabProject.Models.Usuario", b =>
@@ -255,26 +177,57 @@ namespace BioLabProject.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BioLabProject.Models.Detalle", b =>
+            modelBuilder.Entity("Detalle", b =>
                 {
-                    b.HasOne("BioLabProject.Models.Examen", "Examen")
-                        .WithMany()
-                        .HasForeignKey("ExamenId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
-                    b.HasOne("BioLabProject.Models.Ordenes", "Orden")
-                        .WithMany()
-                        .HasForeignKey("OrdenId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("ExamenId")
+                        .HasColumnType("INTEGER");
 
-                    b.Navigation("Examen");
+                    b.Property<int>("OrdenId")
+                        .HasColumnType("INTEGER");
 
-                    b.Navigation("Orden");
+                    b.Property<decimal>("PrecioMomentoDivisa")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamenId");
+
+                    b.HasIndex("OrdenId");
+
+                    b.ToTable("Detalles");
                 });
 
-            modelBuilder.Entity("BioLabProject.Models.Ordenes", b =>
+            modelBuilder.Entity("PagosModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Metodo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Monto")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("OrdenId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Referencia")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrdenId");
+
+                    b.ToTable("Pagos");
+                });
+
+            modelBuilder.Entity("BioLabProject.Models.OrdenesModel", b =>
                 {
                     b.HasOne("BioLabProject.Models.Paciente", "Paciente")
                         .WithMany()
@@ -283,17 +236,6 @@ namespace BioLabProject.Migrations
                         .IsRequired();
 
                     b.Navigation("Paciente");
-                });
-
-            modelBuilder.Entity("BioLabProject.Models.Pago", b =>
-                {
-                    b.HasOne("BioLabProject.Models.Ordenes", "Orden")
-                        .WithMany("Pagos")
-                        .HasForeignKey("OrdenId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Orden");
                 });
 
             modelBuilder.Entity("BioLabProject.Models.Usuario", b =>
@@ -307,8 +249,40 @@ namespace BioLabProject.Migrations
                     b.Navigation("Rol");
                 });
 
-            modelBuilder.Entity("BioLabProject.Models.Ordenes", b =>
+            modelBuilder.Entity("Detalle", b =>
                 {
+                    b.HasOne("BioLabProject.Models.ExamenModel", "Examen")
+                        .WithMany()
+                        .HasForeignKey("ExamenId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BioLabProject.Models.OrdenesModel", "Orden")
+                        .WithMany("Detalles")
+                        .HasForeignKey("OrdenId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Examen");
+
+                    b.Navigation("Orden");
+                });
+
+            modelBuilder.Entity("PagosModel", b =>
+                {
+                    b.HasOne("BioLabProject.Models.OrdenesModel", "Orden")
+                        .WithMany("Pagos")
+                        .HasForeignKey("OrdenId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Orden");
+                });
+
+            modelBuilder.Entity("BioLabProject.Models.OrdenesModel", b =>
+                {
+                    b.Navigation("Detalles");
+
                     b.Navigation("Pagos");
                 });
 #pragma warning restore 612, 618

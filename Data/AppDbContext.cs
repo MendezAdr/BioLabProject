@@ -10,12 +10,11 @@ public class AppDbContext : DbContext
     public DbSet<Usuario> Usuarios { get; set; } = null!;
     public DbSet<Rol> Roles { get; set; } = null!;
     public DbSet<Paciente> Pacientes { get; set; } = null!;
-    public DbSet<Examen> Examenes { get; set; } = null!;
-    public DbSet<Ordenes> Ordenes { get; set; } = null!;
+    public DbSet<ExamenModel> Examenes { get; set; } = null!;
+    public DbSet<OrdenesModel> Ordenes { get; set; } = null!;
     public DbSet<Detalle> Detalles { get; set; } = null!;
-
-    public DbSet<TasaCambio> Tasas { get; set; } = null!;
-    public DbSet<Pago> Pagos { get; set; } = null!;
+    
+    public DbSet<PagosModel> Pagos { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
@@ -41,13 +40,19 @@ public class AppDbContext : DbContext
             new Usuario { Id = 1, Nombre = "Adrian", Apellido = "Mendez", Cedula = "12345678", RolId = 1 }
         );
 
-        // Configurar la relación Orden -> Pagos
-        modelBuilder.Entity<Pago>()
-        .HasOne(p => p.Orden)
-        .WithMany(o => o.Pagos) // Una orden tiene muchos pagos
-        .HasForeignKey(p => p.OrdenId)
-        .OnDelete(DeleteBehavior.Cascade); // Si se borra la orden, se borran sus registros de pago
+        // Configurar que una Orden tiene muchos Detalles
+        modelBuilder.Entity<Detalle>()
+            .HasOne(d => d.Orden)
+            .WithMany(o => o.Detalles)
+            .HasForeignKey(d => d.OrdenId);
 
+        // Configurar que una Orden tiene muchos Pagos (Tu duda principal)
+        modelBuilder.Entity<PagosModel>()
+            .HasOne(p => p.Orden)
+            .WithMany(o => o.Pagos)
+            .HasForeignKey(p => p.OrdenId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         base.OnModelCreating(modelBuilder);
     }
 

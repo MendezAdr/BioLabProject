@@ -6,18 +6,39 @@ using System.Linq;
 using Avalonia.Markup.Xaml;
 using BioLabProject.ViewModels;
 using BioLabProject.Views;
+using BioLabProject.Services;
+using BioLabProject.Services.Servicios;
+using BioLabProject.Services.Interfaces;
+using BioLabProject.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using System; 
+using Microsoft.Extensions.Configuration; 
 
 namespace BioLabProject;
 
 public partial class App : Application
-{
+{   
+    public IServiceProvider ServiceProvider { get; private set; }
+    public IConfiguration Configuration { get; private set; }
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
 
     public override void OnFrameworkInitializationCompleted()
-    {
+    {   
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        
+        var serviceCollection = new ServiceCollection();
+        ConfigureServices(serviceCollection);
+        ServiceProvider = serviceCollection.BuildServiceProvider();
+        
+        
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
@@ -25,11 +46,35 @@ public partial class App : Application
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = ServiceProvider.GetRequiredService<MainWindowViewModel>(),
             };
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+    
+    private void ConfigureServices(IServiceCollection services)
+    {
+
+        // For PostgreSQL, this is for porduction
+
+        var connectionString = Configuration.GetConnectionString("PostgresConnection");
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(connectionString));
+
+        //Sqlite for development and testing
+        //var connectionString = Configuration.GetConnectionString("SqliteConnection");
+        //services.AddDbContext<AppDbContext>(options =>
+        //    options.UseSqlite(connectionString));
+
+        // Register services and view models
+        
+        //esto es para los serviciosssssssssss
+        
+        services.AddScoped<IUsuarioService,UsuarioService>();
+        
+        // Register view models
+        services.AddTransient<MainWindowViewModel>();
     }
 
     private void DisableAvaloniaDataAnnotationValidation()
