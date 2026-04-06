@@ -1,0 +1,13 @@
+modulo de gestion de usuarios (crear usuarios, verificar usuarios y registro de acciones)
+
+modulo de historial de pacientes (DAtos de paciente, estado, deuda)
+
+Modulo de venta y negocio (Venta, anexo, retiro, paquetes de exámenes)
+
+modulo de contabilidad (regsitro, comparación, advertencias de retraso de pagos)
+
+Modulo de totalización, impresión y cierre (impresión de informes, cierres de caja, totalización mensual y búsqueda de registros con filtro personalizado)
+
+modulo de presupuestación (generación de consultas de precios, presupuestos)
+
+Modulo de conversion y cambio de moneda
