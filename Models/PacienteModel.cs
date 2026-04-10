@@ -2,6 +2,9 @@
 
 namespace BioLabProject.Models;
 public class Paciente {
+    /*
+     * el modelo de paciente es bastante sencillo
+     */
     public int Id { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public string Apellido {get; set;} = string.Empty;

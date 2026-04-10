@@ -1,12 +1,22 @@
 //Roles para los usuarios
 
 namespace BioLabProject.Models;
-public class Rol
+
+public class RolModel
 {
-    public int Id {get; set;}
+    public int Id { get; set; }
+    public string RolName { get; set; } = string.Empty;
+    public List<UsuarioModel> Usuarios { get; set; } = new();
+    public PermisosSistema Permisos { get; set; }
 
-    public string Nombre {get;set;} = string.Empty;
-
-    public string Descripcion {get; set;} = string.Empty;
-
+    [Flags]
+    public enum PermisosSistema
+    {
+        Ninguno = 0,
+        CrearVenta = 1,      
+        HacerCierre = 2,     
+        GestionarUsuarios = 4, 
+        VerReportesAntiguos = 8
+        
+    }
 }

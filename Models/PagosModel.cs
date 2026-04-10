@@ -2,6 +2,11 @@ using BioLabProject.Models;
 
 public class PagosModel
 {
+    /*
+     * se sobre entiende que un pago es una
+     * manera de "pagar" una orden, por lo tanto, cada pago
+     * tendra solo un metodo de pago, un monto y una referencia (si aplica)
+     */
     public int Id { get; set; }
     public int OrdenId { get; set; } // Cambiado de VentaId para consistencia
     public OrdenesModel Orden { get; set; } = null!;

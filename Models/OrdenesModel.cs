@@ -5,6 +5,12 @@ namespace BioLabProject.Models;
 
 public class OrdenesModel
 {
+    /*
+     * Una orden representa una venta realizada a un paciente, 
+     * que puede incluir múltiples exámenes (a través de Detalle)
+     * y múltiples pagos (Multimoneda/Multitotal).
+     */
+
     public int Id { get; set; }
     public string NumeroFactura { get; set; } = string.Empty; 
     public DateTime Fecha { get; set; } = DateTime.Now;
