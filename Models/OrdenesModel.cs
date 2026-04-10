@@ -17,7 +17,7 @@ public class OrdenesModel
     
     // Relación con Paciente
     public int PacienteId { get; set; }
-    public Paciente Paciente { get; set; } = null!;
+    public PacienteModel Paciente { get; set; } = null!;
 
     // Totales de la Orden
     public decimal TotalDivisa { get; set; }
@@ -25,10 +25,18 @@ public class OrdenesModel
     public decimal TotalBs => TotalDivisa * TasaBcv; // Propiedad calculada
 
     // 1. Una Orden tiene muchos Exámenes (a través de Detalle)
-    public List<Detalle> Detalles { get; set; } = new();
+    public List<DetalleModel> Detalles { get; set; } = new();
 
     // 2. Una Orden tiene muchos Pagos (Multimoneda/Multitotal)
     public List<PagosModel> Pagos { get; set; } = new();
 
-    public string EstadoPago { get; set; } = "Pendiente"; // Pagado, Parcial, Pendiente
+    public EstadoPago estado { get; set; } // Pagado, Parcial, Pendiente
+
+    [Flags]
+    public enum EstadoPago
+    {
+        Pagado = 1,
+        Pendiente = 2,
+        Parcial = 3
+    }
 }

@@ -3,7 +3,7 @@ using BioLabProject.Models;
 using System;
 
 namespace BioLabProject.Models;
-public class Usuario
+public class UsuarioModel
 {
     public int Id { get; set; }
     public string Username { get; set; } = string.Empty;
@@ -15,6 +15,6 @@ public class Usuario
 
     // Relación explícita
     public int RolId { get; set; } 
-    public Rol Rol { get; set; } = null!;
+    public RolModel Rol { get; set; } = null!;
 
 }

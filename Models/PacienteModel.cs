@@ -1,7 +1,7 @@
 // Models/Paciente.cs
 
 namespace BioLabProject.Models;
-public class Paciente {
+public class PacienteModel {
     /*
      * el modelo de paciente es bastante sencillo
      */

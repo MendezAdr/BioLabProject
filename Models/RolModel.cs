@@ -1,5 +1,8 @@
 //Roles para los usuarios
 
+using System;
+using System.Collections.Generic;
+
 namespace BioLabProject.Models;
 
 public class RolModel

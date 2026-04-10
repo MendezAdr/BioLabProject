@@ -1,6 +1,6 @@
 using BioLabProject.Models;
 
-public class Detalle
+public class DetalleModel
 { /*
    * el detalle es la relacion entre una orden y un examen especifico,
    * es decir, cada detalle representa un examen que se vendio en una orden, 
