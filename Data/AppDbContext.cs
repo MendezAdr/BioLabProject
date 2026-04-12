@@ -7,12 +7,12 @@ namespace BioLabProject.Data;
 
 public class AppDbContext : DbContext
 {
-    public DbSet<Usuario> Usuarios { get; set; } = null!;
-    public DbSet<Rol> Roles { get; set; } = null!;
-    public DbSet<Paciente> Pacientes { get; set; } = null!;
+    public DbSet<UsuarioModel> Usuarios { get; set; } = null!;
+    public DbSet<RolModel> Roles { get; set; } = null!;
+    public DbSet<PacienteModel> Pacientes { get; set; } = null!;
     public DbSet<ExamenModel> Examenes { get; set; } = null!;
     public DbSet<OrdenesModel> Ordenes { get; set; } = null!;
-    public DbSet<Detalle> Detalles { get; set; } = null!;
+    public DbSet<DetalleModel> Detalles { get; set; } = null!;
     
     public DbSet<PagosModel> Pagos { get; set; } = null!;
 
@@ -24,24 +24,24 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         
-        modelBuilder.Entity<Detalle>()
+        modelBuilder.Entity<DetalleModel>()
             .HasOne(d => d.Orden)
             .WithMany() // Una orden puede tener muchos detalles
             .HasForeignKey(d => d.OrdenId);
 
         // 2. Seeding de Roles (Vital para tu sistema de Login)
-        modelBuilder.Entity<Rol>().HasData(
-            new Rol { Id = 1, Nombre = "Administrador", Descripcion = "Acceso total" },
-            new Rol { Id = 2, Nombre = "Bioanalista", Descripcion = "Registro de exámenes y resultados" }
+        modelBuilder.Entity<RolModel>().HasData(
+            new RolModel { Id = 1, RolName = "Administrador", Permisos = RolModel.PermisosSistema.HacerCierre},
+            new RolModel { Id = 2, RolName = "Bioanalista", Permisos = RolModel.PermisosSistema.CrearVenta}
         );
 
         // 3. Usuario administrador inicial (Password en texto plano solo para el ejemplo, usa hashing luego)
-        modelBuilder.Entity<Usuario>().HasData(
-            new Usuario { Id = 1, Nombre = "Adrian", Apellido = "Mendez", Cedula = "12345678", RolId = 1 }
+        modelBuilder.Entity<UsuarioModel>().HasData(
+            new UsuarioModel { Id = 1, Nombre = "Adrian", Apellido = "Mendez", Cedula = "12345678", RolId = 1 }
         );
 
         // Configurar que una Orden tiene muchos Detalles
-        modelBuilder.Entity<Detalle>()
+        modelBuilder.Entity<DetalleModel>()
             .HasOne(d => d.Orden)
             .WithMany(o => o.Detalles)
             .HasForeignKey(d => d.OrdenId);

@@ -9,7 +9,9 @@ namespace BioLabProject.Services.Interfaces;
 
 public interface IUsuarioService
 {
-    Task<OperationResult?> LoginAsync(string cedula);
+    Task<OperationResult?> LoginAsync(string username, string password);
+    
+    Task<OperationResult?> LogOutAsync();
 
     Task<OperationResult> CreateUsuarioAsync(UsuarioModel usuario, int adminId);
 
@@ -21,7 +23,7 @@ public interface IUsuarioService
 
     Task<OperationResult> ActivateUsuarioAsync(int Id, int adminId);
 
-    Task<OperationResult> GetUserAsync(int id, int adminId);
+    Task<OperationResult> GetUserByIdAsync(int id, int adminId);
 
     Task<ListOperationResult<UsuarioModel>> GetAllUsuariosAsync(int adminId);
 
