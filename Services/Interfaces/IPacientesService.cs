@@ -8,10 +8,10 @@ namespace BioLabProject.Services.Interfaces;
 public interface IPacientesService
 {
     Task<ListOperationResult<PacienteModel>> GetAllPacientesAsync();
-    Task<OperationResult> GetPacienteByIdAsync(int id);
-    Task<OperationResult> GetByNombreAsync(string nombre);
-    Task<OperationResult> GetByApellidoAsync(string apellido);
-    Task<OperationResult> GetByCedulaAsync(string cedula);
+    Task<ObjectOperationResult> GetPacienteByIdAsync(int id);
+    Task<ObjectOperationResult> GetByNombreAsync(string nombre);
+    Task<ObjectOperationResult> GetByApellidoAsync(string apellido);
+    Task<ObjectOperationResult> GetByCedulaAsync(string cedula);
     
     Task<OperationResult> CreateAsync(PacienteModel paciente);
     Task<OperationResult> UpdateAsync(PacienteModel paciente);

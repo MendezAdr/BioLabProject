@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using BioLabProject.Models;
 using BioLabProject.Services;
 using BioLabProject.Data;
+using BioLabProject.Helpers.PasswordHasher;
 using Microsoft.Extensions.DependencyInjection;
 using BioLabProject.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -26,12 +27,23 @@ public class UsuarioService : IUsuarioService
     
     
     // Loguearse
-    public Task<OperationResult?> LoginAsync(string username, string password)
+    public async Task<ObjectOperationResult?> LoginAsync(string username, string password)
     {
-        throw new NotImplementedException();
+        var UserExist = await _context.Usuarios
+            .Include(u => u.Rol)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Username == username)
+        if (!UserExist) return ObjectOperationResult(false, "El Nombre de Usuario no existe, verifique e intente nuevamente.", null);
+
+        var ValidPass = VerifyPassword(UserExist.Contrasena, password);
+        if (!ValidPass) return OperationResult(false, "Contrasena incorrecta, intente nuevamente", null);
+        
+        return OperationResult(true, "Bienvenido", UserExist)
+            //el resto de la logica de esto no corresponde a un servicio.
     }
     
-    // desloguearse
+    // desloguearse. No se si esto realmente sea util. 
+    // deberia aplicarlo en una capa superior, tal vez como en ViewModel
     public Task<OperationResult?> LogOutAsync()
     {
         throw new NotImplementedException();
@@ -39,16 +51,51 @@ public class UsuarioService : IUsuarioService
     
     // contrasena
 
-    public Task<OperationResult> ChangePasswordAsync(int usuarioId, string newPassword, int adminId)
-    {
-        throw new NotImplementedException();
+    public async Task<OperationResult> ChangePasswordAsync(int usuarioId, string newPassword, int adminId)
+    { //importante, buscar el metodo para hashear la contrasena
+        var adminValidate = await _context.Usuarios
+            .Include(u => u.Rol)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == adminId);
+
+        var validatePermisos = ValidatePermisos(adminValidate);
+        if (!validatePermisos.Success) return new OperationResult(false, validatePermisos.Message);
+
+        var userExistence = await _context.Usuarios
+            .FirstOrDefaultAsync(u => u.UserId == adminId);
+
+        if (!userExistence) return OperationResult(false, "El usuario no Existe");
+
+        try
+        {
+            _context.Usuarios.Update( new UsuarioModel(
+                    userExistence.Id = userExistence.Id,
+                    userExistence.Username = userExistence.Username,
+                    userExistence.Nombre = userExistence.Nombre,
+                    userExistence.Apellido = userExistence.Apellido,
+                    userExistence.Cedula = userExistence.Cedula,
+                    userExistence.IsActive = userExistence.IsActive,
+                    userExistence.RolId = userExistence.RolId
+                    userExistence.Rol = userExistence.Rol
+
+                    //solo se actualiza la contrasena se hashea automaticamente en el metodo HashPassword
+                    userExistence.Contrasena = HashPassword(newPassword)
+
+                ))
+                await _context.SaveChangesAsync();
+            return OperationResult(true, "Contrasena actualizada exitosamente");
+        }
+        catch (Exception ex)
+        {
+            return OperationResult(false, $"Error: \n{ex.Message}");
+        }
+            
+
     }
-    
-    
-    
+
     // obtener usuario especifico
-    
-    public async Task<OperationResult> GetUserByIdAsync(int id, int adminId)
+
+    public async Task<ObjectOperationResult> GetUserByIdAsync(int id, int adminId)
     {
         var adminValidate = await _context.Usuarios
             .Include(u => u.Rol)
@@ -269,6 +316,21 @@ public class UsuarioService : IUsuarioService
         }
 		
         return new OperationResult ( true, " " );
+    }
+
+    // Metodos de contrasena
+
+    public string HashPassword(string Pass)
+    {
+        //por implementar
+        return PasswordHasher.PasswordHash(Pass);
+
+    }
+
+    public bool VerifyPassword(string UserPass, string HashPass )
+    {
+        //por implementar
+        return PasswordHasher.VerifyPassword(UserPass, HashPass);
     }
 }
     

@@ -19,7 +19,9 @@ public class RolModel
         CrearVenta = 1,      
         HacerCierre = 2,     
         GestionarUsuarios = 4, 
-        VerReportesAntiguos = 8
-        
+        VerReportesAntiguos = 8,
+        ModificarExamenes = 16,
+        ModificarPacientes = 32
+
     }
 }
