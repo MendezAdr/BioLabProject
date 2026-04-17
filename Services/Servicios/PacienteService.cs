@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BioLabProject.Models;
 using BioLabProject.Services.Interfaces;
-using BioLabProject.Data
+using BioLabProject.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BioLabProject.Services.Servicios;
 
@@ -21,13 +23,11 @@ public class PacienteService : IPacientesService
     {
         try
         {
-
-            return ListOperationResult<PacienteModel>(true, "Pacientes obtenidos correctamente.", await _appDbContext.Pacientes.ToListAsync());
-
+            return new ListOperationResult<PacienteModel>(true, "Pacientes obtenidos correctamente.", await _appDbContext.Pacientes.ToListAsync());
         }
         catch (Exception ex)
         {
-            return ListOperationResult<PacienteModel>(false, $"Error al obtener pacientes: {ex.Message}", null);
+            return new ListOperationResult<PacienteModel>(false, $"Error al obtener pacientes: {ex.Message}", null);
         }
     }
 
@@ -50,11 +50,11 @@ public class PacienteService : IPacientesService
     {
         try
         {
-            return ObjectOperationResult(true, "Paciente obtenido correctamente.", await _appDbContext.Pacientes.FirstOrDefaultAsync(p => p.Nombre == nombre));
+            return new ObjectOperationResult(true, "Paciente obtenido correctamente.", await _appDbContext.Pacientes.FirstOrDefaultAsync(p => p.Nombre == nombre));
         }
         catch (Exception ex)
         {
-            return ObjectOperationResult(false, $"Error al obtener paciente: {ex.Message}", null);
+            return new ObjectOperationResult(false, $"Error al obtener paciente: {ex.Message}", null);
         }
     }
 
@@ -63,11 +63,11 @@ public class PacienteService : IPacientesService
     {
         try
         {
-            return ObjectOperationResult(true, "Paciente obtenido correctamente.", await _appDbContext.Pacientes.FirstOrDefaultAsync(p => p.Apellido == apellido));
+            return new ObjectOperationResult(true, "Paciente obtenido correctamente.", await _appDbContext.Pacientes.FirstOrDefaultAsync(p => p.Apellido == apellido));
         }
         catch (Exception ex)
         {
-            return ObjectOperationResult(false, $"Error al obtener paciente: {ex.Message}", null);
+            return new ObjectOperationResult(false, $"Error al obtener paciente: {ex.Message}", null);
         }
     }
 
@@ -76,12 +76,12 @@ public class PacienteService : IPacientesService
     {
         try
         {
-            return ObjectOperationResult(true, "Paciente obtenido correctamente.", await _appDbContext.Pacientes.FirstOrDefaultAsync(p => p.Cedula == cedula));
+            return new ObjectOperationResult(true, "Paciente obtenido correctamente.", await _appDbContext.Pacientes.FirstOrDefaultAsync(p => p.Cedula == cedula));
 
         }
         catch (Exception ex)
         {
-            return ObjectOperationResult(false, $"Error al obtener paciente: {ex.Message}", null);
+            return new ObjectOperationResult(false, $"Error al obtener paciente: {ex.Message}", null);
 
         }
     }
@@ -100,18 +100,18 @@ public class PacienteService : IPacientesService
         }
         if (await _appDbContext.Pacientes.AnyAsync(p => p.Cedula == paciente.Cedula))
         {
-            return OperationResult(false, "Ya existe un paciente con la misma cédula.");
+            return new OperationResult(false, "Ya existe un paciente con la misma cédula.");
         }
 
         try
         {
             await _appDbContext.Pacientes.AddAsync(paciente);
             await _appDbContext.SaveChangesAsync();
-            return OperationResult(true, "Paciente creado correctamente.");
+            return new OperationResult(true, "Paciente creado correctamente.");
         }
         catch (Exception ex)
         {
-            return OperationResult(false, $"Error al crear paciente: {ex.Message}");
+            return new OperationResult(false, $"Error al crear paciente: {ex.Message}");
         }
 
     }
@@ -125,9 +125,9 @@ public class PacienteService : IPacientesService
         {
             return validationResult;
         }
-        if (await !_appDbContext.Pacientes.AnyAsync(p => p.Id == paciente.Id))
+        if (await _appDbContext.Pacientes.AnyAsync(p => p.Id == paciente.Id) == false)
         {
-            return OperationResult(false, "Paciente no encontrado.");
+            return new OperationResult(false, "Paciente no encontrado.");
         }
         try
         {   
@@ -141,11 +141,11 @@ public class PacienteService : IPacientesService
             });
             await _appDbContext.SaveChangesAsync();
 
-            return OperationResult(true, "Paciente actualizado correctamente.");
+            return new OperationResult(true, "Paciente actualizado correctamente.");
         }
         catch (Exception ex) 
         { 
-            return OperationResult(false, $"Error al actualizar paciente: {ex.Message}");
+            return new OperationResult(false, $"Error al actualizar paciente: {ex.Message}");
         }
     }
 
@@ -158,9 +158,9 @@ public class PacienteService : IPacientesService
         {
             return permisosResult;
         }
-        if (await !_appDbContext.Pacientes.AnyAsync(p => p.Id == id))
+        if (await _appDbContext.Pacientes.AnyAsync(p => p.Id == id) == false)
         {
-            return OperationResult(false, "Paciente no encontrado.");
+            return new OperationResult(false, "Paciente no encontrado.");
         }
         try
         {
@@ -169,11 +169,11 @@ public class PacienteService : IPacientesService
                 p.IsActive = false;
             });
             await _appDbContext.SaveChangesAsync();
-            return OperationResult(true, "Paciente desactivado correctamente.");
+            return new OperationResult(true, "Paciente desactivado correctamente.");
         }
         catch (Exception ex)
         {
-            return OperationResult(false, $"Error al desactivar paciente: {ex.Message}");
+            return new OperationResult(false, $"Error al desactivar paciente: {ex.Message}");
         }
     }
 
@@ -186,9 +186,9 @@ public class PacienteService : IPacientesService
         {
             return permisosResult;
         }
-        if (await !_appDbContext.Pacientes.AnyAsync(p => p.Id == id))
+        if (await _appDbContext.Pacientes.AnyAsync(p => p.Id == id) == false)
         {
-            return OperationResult(false, "Paciente no encontrado.");
+            return new OperationResult(false, "Paciente no encontrado.");
         }
         try
         {
@@ -197,11 +197,11 @@ public class PacienteService : IPacientesService
                 p.IsActive = true;
             });
             await _appDbContext.SaveChangesAsync();
-            return OperationResult(true, "Paciente reactivado correctamente.");
+            return new OperationResult(true, "Paciente reactivado correctamente.");
         }
         catch (Exception ex)
         {
-            return OperationResult(false, $"Error al reactivar paciente: {ex.Message}");
+            return new OperationResult(false, $"Error al reactivar paciente: {ex.Message}");
         }
     }
 
@@ -234,8 +234,7 @@ public class PacienteService : IPacientesService
         {
             paciente.Direccion = "N/A";
         }
-
-
+        
         return new OperationResult(true, " ");
 
     }
@@ -251,7 +250,6 @@ public class PacienteService : IPacientesService
         if (!adminValidate.Rol.Permisos.HasFlag(RolModel.PermisosSistema.ModificarPacientes))
         {
             return new OperationResult(false, "El usuario no tiene permisos para gestionar pacientes.");
-
         }
 
         return new OperationResult(true, " ");

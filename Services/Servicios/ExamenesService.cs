@@ -20,15 +20,15 @@ public class ExamenesService
     }
 
 
-    public async Task<ListOperationResult> GetExamenesAsync()
+    public async Task<ListOperationResult<ExamenModel>> GetExamenesAsync()
     {
         try
         {
-            return ListOperationResult<ExamenModel>(true, "", Data: await _appDbContext.Examenes.ToListAsync());
+            return new ListOperationResult<ExamenModel>(true, "", Data: await _appDbContext.Examenes.ToListAsync());
         }
         catch (Exception ex) 
         {
-            return ListOperationResult<ExamenModel>(false, $"Error: \n{ex.Message}", Data: null);
+            return new ListOperationResult<ExamenModel>(false, $"Error: \n{ex.Message}", Data: null);
         }
     }
 
@@ -38,13 +38,13 @@ public class ExamenesService
             var examen = await _appDbContext.Examenes.FindAsync(id);
             if (examen == null)
             {
-                return ObjectOperationResult(false, "Examen no encontrado.", null);
+                return new ObjectOperationResult(false, "Examen no encontrado.", null);
             }
-            return ObjectOperationResult(true, "", examen);
+            return new ObjectOperationResult(true, "", examen);
         }
         catch (Exception ex)
         {
-            return ObjectOperationResult(false, $"Error: \n{ex.Message}", null);
+            return new ObjectOperationResult(false, $"Error: \n{ex.Message}", null);
         }
     }
     public async Task<ObjectOperationResult> CreateExamenAsync(ExamenModel examen, int AdminId)
@@ -55,32 +55,32 @@ public class ExamenesService
             var validationResult = ValidatePermisos(adminValidate);
             if (!validationResult.Success)
             {
-                return ObjectOperationResult(false, validationResult.Message, null);
+                return new ObjectOperationResult(false, validationResult.Message, null);
             }
             var examenValidationResult = ValidateExamen(examen);
             if (!examenValidationResult.Success)
             {
-                return ObjectOperationResult(false, examenValidationResult.Message, null);
+                return new ObjectOperationResult(false, examenValidationResult.Message, null);
             }
             _appDbContext.Examenes.Add(examen);
             await _appDbContext.SaveChangesAsync();
-            return ObjectOperationResult(true, "Examen creado exitosamente.", examen);
+            return new ObjectOperationResult(true, "Examen creado exitosamente.", examen);
         }
         catch (Exception ex)
         {
-            return ObjectOperationResult(false, $"Error: \n{ex.Message}", null);
+            return new ObjectOperationResult(false, $"Error: \n{ex.Message}", null);
         }
     }
 
     public async Task<OperationResult> UpdateExamenAsync(ExamenModel examen, int AdminId, int ExamenId)
     {   
         var existingExamen = await _appDbContext.Examenes.FirstOrDefaultAsync(e => e.Id == ExamenId);
-        if (!existingExamen)
+        if (existingExamen == null)
         {
-            return OperationResult(false, "El examen al que intenta acceder no existe");
+            return new OperationResult(false, "El examen al que intenta acceder no existe");
         }
 
-        var validExamen = ValidateExamen(Examen);
+        var validExamen = ValidateExamen(examen);
         if(!validExamen.Success) return validExamen;
 
         var Admin = await _appDbContext.Usuarios
@@ -98,11 +98,11 @@ public class ExamenesService
             existingExamen.Descripcion = examen.Descripcion;
 
             await _appDbContext.SaveChangesAsync();
-            return OperationResult(true, "Examen actualizado exitosamente.");
+            return new OperationResult(true, "Examen actualizado exitosamente.");
         }
         catch (Exception ex)
         {
-            return OperationResult(false, $"Error: \n{ex.Message}");
+            return new OperationResult(false, $"Error: \n{ex.Message}");
         }
     }
 
@@ -111,7 +111,7 @@ public class ExamenesService
         var existingExamen = await _appDbContext.Examenes.FirstOrDefaultAsync(e => e.Id == id);
         if (existingExamen == null)
         {
-            return OperationResult(false, "El examen al que intenta acceder no existe");
+            return new OperationResult(false, "El examen al que intenta acceder no existe");
         }
         var Admin = await _appDbContext.Usuarios
             .AsNoTracking()
@@ -123,11 +123,11 @@ public class ExamenesService
         {
             _appDbContext.Examenes.Remove(existingExamen);
             await _appDbContext.SaveChangesAsync();
-            return OperationResult(true, "Examen eliminado exitosamente.");
+            return new OperationResult(true, "Examen eliminado exitosamente.");
         }
         catch (Exception ex)
         {
-            return OperationResult(false, $"Error: \n{ex.Message}");
+            return new OperationResult(false, $"Error: \n{ex.Message}");
         }
     }
 
@@ -138,21 +138,21 @@ public class ExamenesService
     {
         if (examen.NombreExamen == null || examen.NombreExamen.Trim() == "")
         {
-            return OperationResult(false, "El nombre del examen es obligatorio.");
+            return new OperationResult(false, "El nombre del examen es obligatorio.");
         }
         if (examen.CostoEnDivisa <= 0)
         {
-            return OperationResult(false, "El costo en divisa debe ser un número positivo.");
+            return new OperationResult(false, "El costo en divisa debe ser un número positivo.");
         }
         if (examen.CostoenBolivares <= 0)
         {
-            return OperationResult(false, "El costo en bolívares debe ser un número positivo.");
+            return new OperationResult(false, "El costo en bolívares debe ser un número positivo.");
         }
         if (examen.Descripcion == null || examen.Descripcion.Trim() == "")
         {
             examen.Descripcion = "N/A";
         }
-        return OperationResult(true, "");
+        return new OperationResult(true, "");
 
     }
 
@@ -164,19 +164,13 @@ public class ExamenesService
         {
             return new OperationResult(false, "Usuario administrador no encontrado.");
         }
-
+        
         if (!adminValidate.Rol.Permisos.HasFlag(RolModel.PermisosSistema.ModificarExamenes))
         {
             return new OperationResult(false, "El usuario no tiene permisos para gestionar exámenes.");
-
         }
-
         return new OperationResult(true, " ");
     }
-
-
-
-
-
+    
 
 }

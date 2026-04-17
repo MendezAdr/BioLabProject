@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using BioLabProject.Models;
 using BioLabProject.Services;
 using BioLabProject.Data;
-using BioLabProject.Helpers.PasswordHasher;
+using BioLabProject.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using BioLabProject.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -32,14 +32,14 @@ public class UsuarioService : IUsuarioService
         var UserExist = await _context.Usuarios
             .Include(u => u.Rol)
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Username == username)
-        if (!UserExist) return ObjectOperationResult(false, "El Nombre de Usuario no existe, verifique e intente nuevamente.", null);
+            .FirstOrDefaultAsync(a => a.Username == username);
+        if (UserExist == null) return new ObjectOperationResult(false, "El Nombre de Usuario no existe, verifique e intente nuevamente.", null);
 
         var ValidPass = VerifyPassword(UserExist.Contrasena, password);
-        if (!ValidPass) return OperationResult(false, "Contrasena incorrecta, intente nuevamente", null);
-        
-        return OperationResult(true, "Bienvenido", UserExist)
-            //el resto de la logica de esto no corresponde a un servicio.
+        if (!ValidPass) return new ObjectOperationResult(false, "Contrasena incorrecta, intente nuevamente", null);
+
+        return new ObjectOperationResult(true, "Bienvenido", UserExist);
+        //el resto de la logica de esto no corresponde a un servicio.
     }
     
     // desloguearse. No se si esto realmente sea util. 
@@ -62,35 +62,32 @@ public class UsuarioService : IUsuarioService
         if (!validatePermisos.Success) return new OperationResult(false, validatePermisos.Message);
 
         var userExistence = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.UserId == adminId);
+            .FirstOrDefaultAsync(u => u.Id == adminId);
 
-        if (!userExistence) return OperationResult(false, "El usuario no Existe");
+        if (userExistence == null) return new OperationResult(false, "El usuario no Existe");
 
         try
         {
-            _context.Usuarios.Update( new UsuarioModel(
-                    userExistence.Id = userExistence.Id,
-                    userExistence.Username = userExistence.Username,
-                    userExistence.Nombre = userExistence.Nombre,
-                    userExistence.Apellido = userExistence.Apellido,
-                    userExistence.Cedula = userExistence.Cedula,
-                    userExistence.IsActive = userExistence.IsActive,
-                    userExistence.RolId = userExistence.RolId
-                    userExistence.Rol = userExistence.Rol
+            userExistence.Id = userExistence.Id;
+            userExistence.Username = userExistence.Username;
+            userExistence.Nombre = userExistence.Nombre;
+            userExistence.Apellido = userExistence.Apellido;
+            userExistence.Cedula = userExistence.Cedula;
+            userExistence.IsActive = userExistence.IsActive;
+            userExistence.RolId = userExistence.RolId;
+            userExistence.Rol = userExistence.Rol;
 
                     //solo se actualiza la contrasena se hashea automaticamente en el metodo HashPassword
-                    userExistence.Contrasena = HashPassword(newPassword)
-
-                ))
-                await _context.SaveChangesAsync();
-            return OperationResult(true, "Contrasena actualizada exitosamente");
+                    userExistence.Contrasena = HashPassword(newPassword);
+                
+            await _context.SaveChangesAsync();
+            return new OperationResult(true, "Contrasena actualizada exitosamente");
         }
         catch (Exception ex)
         {
-            return OperationResult(false, $"Error: \n{ex.Message}");
+            return new OperationResult(false, $"Error: \n{ex.Message}");
         }
-            
-
+        
     }
 
     // obtener usuario especifico
@@ -263,10 +260,8 @@ public class UsuarioService : IUsuarioService
         {
             return new ListOperationResult<UsuarioModel>(false, $" Error: {e.Message}", null);
         }
-
-
+        
     }
-    
     
     
     //Metodos de uso multiple:

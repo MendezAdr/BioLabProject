@@ -8,12 +8,12 @@ namespace BioLabProject.Services.Interfaces;
 public interface IPagosService
 {   
     //obtencion de pagos
-    Task<OperationResult> GetPagoByIdAsync(int id);
-    Task<OperationResult> GetPagoByMetodoAsync(int IdMetodo);
-    Task<OperationResult> GetPagoByOrdenAsync(int OrdenId);
-    Task<OperationResult> GetPagoByReferenciaAsync(string ReferenciaId);
-    Task<OperationResult> GetAllPagosEntreFechasAsync(DateTime? fechaInicio, DateTime? fechaFin );
-    Task<OperationResult> GetAllPagosByMetodoAsync(int IdMetodo);
+    Task<ObjectOperationResult> GetPagoByIdAsync(int id);
+    Task<ListOperationResult<PagosModel>> GetPagosByMetodoAsync(int IdMetodo);
+    Task<ListOperationResult<PagosModel>> GetPagosByOrdenAsync(int OrdenId);
+    Task<ObjectOperationResult> GetPagoByReferenciaAsync(string ReferenciaId);
+    Task<ListOperationResult<PagosModel>> GetAllPagosEntreFechasAsync(DateTime? fechaInicio, DateTime? fechaFin );
+    
     
     //metodos restantes
     Task<OperationResult> CreatePagoAsync(PagosModel pago);

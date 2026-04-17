@@ -8,11 +8,11 @@ public class PagosModel
      * tendra solo un metodo de pago, un monto y una referencia (si aplica)
      */
     public int Id { get; set; }
-    public int OrdenId { get; set; } // Cambiado de VentaId para consistencia
+    public int OrdenId { get; set; } 
     public OrdenesModel Orden { get; set; } = null!;
 
     public MetodoPago Metodo { get; set; }
-    public decimal Monto { get; set; } // El monto que se pagó con este método
+    public decimal Monto { get; set; } 
     public string Referencia { get; set; } = string.Empty;
 
     public enum MetodoPago
